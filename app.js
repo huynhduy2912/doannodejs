@@ -6,7 +6,7 @@ var logger = require('morgan');
 var mongoose = require('mongoose')
 let { CreateErrorRes } = require('./utils/responseHandler')
 const multer = require('multer');
-
+const session = require('express-session');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -19,7 +19,11 @@ mongoose.connection.on('connected', () => {
 })
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
-
+app.use(session({
+  secret: 'your-secret-key',
+  resave: false,
+  saveUninitialized: false
+}));
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

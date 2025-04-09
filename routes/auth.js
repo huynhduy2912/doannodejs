@@ -4,7 +4,7 @@ var userController = require('../controllers/users')
 let { CreateSuccessRes, CreateErrorRes } = require('../utils/responseHandler');
 let jwt = require('jsonwebtoken')
 let constants = require('../utils/constants')
-let { check_authentication } = require('../utils/check_auth')
+let { check_authentication, check_authentication_token } = require('../utils/check_auth')
 let { validate, validatorLogin, validatorForgotPassword, validatorChangePassword } = require('../utils/validators')
 let crypto = require('crypto')
 let { sendmail } = require('../utils/sendmail')
@@ -24,20 +24,44 @@ router.get('/login', (req, res) => {
 router.get('/signup', (req, res) => {
     res.render('auth/signup');
 });
+router.get('/me', async function (req, res, next) {
+    try {
+        const user = req.session.user;
+        const token = req.session.token;
+        if (!user || !token) {
+            return res.redirect('/auth/login');
+        }
+        res.render('auth/me', { user, token });
+    } catch (error) {
+        next(error);
+    }
+});
+
+
+
 router.post('/login', async function (req, res, next) {
     try {
         let body = req.body;
         let username = body.username;
         let password = body.password;
+
         let userID = await userController.CheckLogin(username, password);
-        CreateSuccessRes(res, jwt.sign({
+        let user = await userController.GetUserByID(userID);
+
+        const token = jwt.sign({
             id: userID,
             expire: (new Date(Date.now() + 60 * 60 * 1000)).getTime()
-        }, constants.SECRET_KEY), 200)
+        }, constants.SECRET_KEY);
+
+        req.session.token = token;
+        req.session.user = user;
+        res.redirect('/auth/me');
     } catch (error) {
-        next(error)
+        next(error);
     }
 });
+
+
 
 router.post('/signup', validatorLogin, validate, async function (req, res, next) {
     try {
