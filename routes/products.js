@@ -70,7 +70,6 @@ router.post('/',
   }
 );
 
-
 router.put('/:id',
   check_authentication,
   check_authorization(constants.MOD_PERMISSION),

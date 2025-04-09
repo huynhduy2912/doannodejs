@@ -6,7 +6,7 @@ module.exports = {
     GetAllUsers: async function () {
         return await userModel.find({
             status: false
-        })
+        }).populate('role');
     },
     GetUserByID: async function (id) {
         return await userModel.findById(id).populate({

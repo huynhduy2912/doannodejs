@@ -1,21 +1,22 @@
 var express = require('express');
 var router = express.Router();
 let userController = require('../controllers/users')
-let { check_authentication,check_authorization } = require('../utils/check_auth')
+let { check_authentication, check_authorization } = require('../utils/check_auth')
 let { CreateSuccessRes } = require('../utils/responseHandler')
 let constants = require('../utils/constants')
 /* GET users listing. */
 router.get('/', check_authentication,
-  check_authorization(constants.ADMIN_PERMISSION)
-,async function (req, res, next) {
-  try {
-    let users = await userController.GetAllUsers();
-    CreateSuccessRes(res, users, 200);
-  } catch (error) {
-    next(error)
-  }
-});
-router.post('/',check_authentication, async function (req, res, next) {
+  check_authorization(constants.USER_PERMISSION), async function (req, res, next) {
+    try {
+      let users = await userController.GetAllUsers();
+      // Render view users.pug và truyền dữ liệu users vào view
+      res.render('users', { users: users });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+router.post('/', check_authentication, async function (req, res, next) {
   try {
     let body = req.body
     let user = await userController.CreateAnUser(
