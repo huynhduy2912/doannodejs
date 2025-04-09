@@ -48,12 +48,14 @@ router.post('/',
         try {
             const userId = req.user._id;
             const { product, quantity } = req.body;
+            console.log("product:quantity", userId, quantity);
             if (!product || !quantity) {
                 return res.status(400).json({
                     success: false,
                     message: `Thiếu product hoặc quantity | product: ${product}, quantity: ${quantity}`
                 });
             }
+
             const updatedCart = await cartController.addToCart(userId, product, quantity);
             CreateSuccessRes(res, updatedCart, 200);
         } catch (err) {

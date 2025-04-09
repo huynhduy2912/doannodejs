@@ -21,6 +21,11 @@ module.exports = {
     },
 
     deleteCategory: async (id) => {
-        return await categoryModel.findByIdAndDelete(id); // XÓA CỨNG
+        return await categoryModel.findByIdAndUpdate(
+            id,
+            { isDeleted: true },
+            { new: true }
+        );
     }
+
 };

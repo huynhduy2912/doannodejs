@@ -16,7 +16,8 @@ const cartSchema = new Schema({
                 type: Number,
                 required: true,
                 min: 1
-            }
+            },
+            isDeleted: { type: Boolean, default: false }
         }
     ]
 }, { timestamps: true });

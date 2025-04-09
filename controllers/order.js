@@ -68,12 +68,17 @@ module.exports = {
 
     deleteOrder: async function (orderId) {
         try {
-            const deleted = await orderModel.findByIdAndDelete(orderId);
-            if (!deleted) throw new Error('Đơn hàng không tồn tại');
-            return deleted;
+            const order = await orderModel.findById(orderId);
+            if (!order) throw new Error('Đơn hàng không tồn tại');
+
+            order.isDeleted = true;
+            await order.save();
+
+            return order;
         } catch (error) {
             throw new Error(error.message);
         }
     }
+
 
 };

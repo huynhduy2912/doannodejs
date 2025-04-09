@@ -72,12 +72,29 @@ module.exports = {
             const cart = await cartModel.findOne({ userId });
             if (!cart) throw new Error('Giỏ hàng không tồn tại');
 
-            cart.items = cart.items.filter(item => item.product.toString() !== productId);
+            let found = false;
+
+            cart.items = cart.items.map(item => {
+                if (item.product.toString() === productId && !item.isDeleted) {
+                    item.isDeleted = true;
+                    found = true;
+                }
+                return item;
+            });
+
+            if (!found) throw new Error('Sản phẩm không có trong giỏ hàng hoặc đã bị xoá');
 
             await cart.save();
-            return await cart.populate('items.product');
+
+            const filteredItems = cart.items.filter(item => !item.isDeleted);
+
+            return await cart.populate({
+                path: 'items.product',
+                match: { _id: { $in: filteredItems.map(i => i.product) } }
+            });
         } catch (error) {
             throw new Error(error.message);
         }
     }
+
 }

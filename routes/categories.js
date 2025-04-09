@@ -4,6 +4,7 @@ const categoryController = require('../controllers/categories');
 const { CreateSuccessRes } = require('../utils/responseHandler');
 const { check_authentication, check_authorization } = require('../utils/check_auth');
 const constants = require('../utils/constants');
+const Category = require('../schemas/category');
 
 router.get('/', check_authentication, check_authorization(constants.USER_PERMISSION), async (req, res, next) => {
   try {
@@ -41,13 +42,23 @@ router.put('/:id', check_authentication, check_authorization(constants.USER_PERM
   }
 });
 
-router.delete('/:id', check_authentication, check_authorization(constants.USER_PERMISSION), async (req, res, next) => {
+router.delete('/:id', check_authentication, check_authorization(constants.ADMIN_PERMISSION), async (req, res, next) => {
   try {
-    const category = await categoryController.deleteCategory(req.params.id);
+    const category = await Category.findByIdAndUpdate(
+      req.params.id,
+      { isDeleted: true },
+      { new: true }
+    );
+
+    if (!category) {
+      return res.status(404).json({ success: false, message: 'Danh mục không tồn tại' });
+    }
+
     CreateSuccessRes(res, category, 200);
   } catch (err) {
     next(err);
   }
 });
+
 
 module.exports = router;
