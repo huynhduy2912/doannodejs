@@ -9,7 +9,6 @@ router.get('/', check_authentication,
   check_authorization(constants.USER_PERMISSION), async function (req, res, next) {
     try {
       let users = await userController.GetAllUsers();
-      // Render view users.pug và truyền dữ liệu users vào view
       res.render('users', { users: users });
     } catch (error) {
       next(error);

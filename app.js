@@ -41,24 +41,6 @@ app.use(function (req, res, next) {
 app.use('/views', express.static(__dirname + '/views'));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/upload', require('./routes/upload'));
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/');
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname);
-  }
-});
-
-const upload = multer({ storage: storage });
-app.post('/upload', upload.single('image'), (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ success: false, message: 'Chưa chọn file' });
-  }
-
-  const filePath = `/uploads/${req.file.filename}`;
-  res.json({ success: true, url: filePath });
-});
 
 app.use(function (err, req, res, next) {
   // set locals, only providing error in development

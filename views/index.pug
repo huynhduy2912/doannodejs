@@ -1,0 +1,50 @@
+block content
+  style.
+    .product-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding: 20px;
+    }
+    .product-card {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 250px;
+      padding: 15px;
+      background-color: #fff;
+      transition: transform 0.3s;
+    }
+    .product-card:hover {
+      transform: scale(1.03);
+    }
+    .product-name {
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .product-price {
+      color: #e74c3c;
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+    .product-category {
+      color: #555;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+
+  h1= title
+
+if products.length
+  .product-list
+    each product in products
+      .product-card
+        .product-name= product.name
+        .product-price Giá: #{product.price} VNĐ
+        if product.category
+          .product-category Danh mục: #{product.category.name}
+        a.btn-detail(href=`/products/${product._id}`) Xem chi tiết
+else
+  p Không có sản phẩm nào.
